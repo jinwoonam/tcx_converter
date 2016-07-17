@@ -5,7 +5,7 @@ track_name = 'test'
 ns = {'garmin_tc': 'http://www.garmin.com/xmlschemas/TrainingCenterDatabase/v2',
       'role': 'http://characters.example.com'}
 
-tree = ET.parse('____139km(1).tcx')
+tree = ET.parse('0713anbandegi.tcx')
 root = tree.getroot()
 
 ET.register_namespace('', 'http://www.garmin.com/xmlschemas/TrainingCenterDatabase/v2')
@@ -30,7 +30,7 @@ for courses in root.findall('garmin_tc:Courses', ns):
             pointtype.text = 'Left'
         if (name.text.lower().find('right') != -1):
             pointtype.text = 'Right'
-        if (name.text.lower().find('%') != -1):
+        if (name.text.lower().find('%') != -1 | (name.text.lower().find('ups') != -1)):
             pointtype.text = 'Valley'
             upstart = True
         if (name.text.lower().find('top') != -1):
