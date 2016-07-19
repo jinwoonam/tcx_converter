@@ -78,13 +78,17 @@ for trkpt in gpx_root.iterfind('.//gpx_ns:trkpt', gpx_ns):
 
       # add <TrackPoint>
       tcx_Trackpoint = ET.SubElement(tcx_Track, 'Trackpoint')
+      tcx_Time = ET.SubElement(tcx_Trackpoint, 'Time')
       tcx_Position = ET.SubElement(tcx_Trackpoint, 'Position')
       tcx_Latitude = ET.SubElement(tcx_Position, 'LatitudeDegrees')
       tcx_Longitude = ET.SubElement(tcx_Position, 'LongitudeDegrees')
       tcx_Altitude = ET.SubElement(tcx_Trackpoint, 'AltitudeMeters')
+      tcx_Distance = ET.SubElement(tcx_Trackpoint, 'DistanceMeters')
+      tcx_Time.text = '2010-01-01T00:00:00Z'
       tcx_Latitude.text = lat
       tcx_Longitude.text = lon
       tcx_Altitude.text = ele.text
+      tcx_Distance.text = 0
 
 ###############################################################################
 # Add CoursePoint in Courses
@@ -97,11 +101,13 @@ for wpt in gpx_root.iterfind('gpx_ns:wpt', gpx_ns):
       # add <CoursePoint>
       tcx_CoursePoint = ET.SubElement(tcx_Course, 'CoursePoint')
       tcx_CPName = ET.SubElement(tcx_CoursePoint, 'Name')
+      tcx_CPTime = ET.SubElement(tcx_CoursePoint, 'Time')
       tcx_CPPosition = ET.SubElement(tcx_CoursePoint, 'Position')
       tcx_CPLatitude = ET.SubElement(tcx_CPPosition, 'LatitudeDegrees')
       tcx_CPLongitude = ET.SubElement(tcx_CPPosition, 'LongitudeDegrees')
       tcx_CPPointType = ET.SubElement(tcx_CoursePoint, 'PointType')
       tcx_CPName.text = name.text
+      tcx_CPTime.text = '2010-01-01T00:00:00Z'
       tcx_CPLatitude.text = lat
       tcx_CPLongitude.text = lon
       tcx_CPPointType.text = 'Generic'
@@ -119,7 +125,7 @@ for wpt in gpx_root.iterfind('gpx_ns:wpt', gpx_ns):
             tcx_CPPointType.text = 'Left'
       if (tcx_CPName.text.lower().find('right') != -1):
             tcx_CPPointType.text = 'Right'
-      if (tcx_CPName.text.lower().find('%') != -1 | (name.text.lower().find('ups') != -1)):
+      if (tcx_CPName.text.lower().find('%') != -1 | (name.text.lower().find('up') != -1)):
             tcx_CPPointType.text = 'Valley'
             upstart = True
       if (tcx_CPName.text.lower().find('top') != -1):
