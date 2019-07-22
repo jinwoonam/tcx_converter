@@ -1,17 +1,10 @@
 import requests
 import sys
 import datetime
+import webbrowser
 
 # https://www.strava.com/settings/api
-strava_token = "Bearer 49b43c26085dce9a7fb39142b7c029d37a728cb5"
-
-if (2 == len(sys.argv)):
-    seg_no = sys.argv[1]
-else:
-    print("Usage : {py} segment_number".format(py=sys.argv[0]))
-    exit(0)
-
-url = "https://www.strava.com/api/v3/segments/" + seg_no
+strava_token = "Bearer 01af046cabff7462c5512440394dbff40bf570a8"
 
 headers = {
     'Authorization': strava_token,
@@ -25,6 +18,22 @@ headers = {
     'Connection': "keep-alive",
     'cache-control': "no-cache"
     }
+
+if (2 == len(sys.argv)):
+    seg_no = sys.argv[1]
+else:
+    r = requests.request("GET", "https://www.strava.com/api/v3/athlete", headers=headers)
+    #print(r.status_code)
+
+    if (200 != r.status_code):
+	    print("Error:")
+        webbrowser.open('https://www.strava.com/settings/api')
+        exit(0)
+    else :
+        print("Usage : {py} segment_number".format(py=sys.argv[0]))
+        exit(0)
+
+url = "https://www.strava.com/api/v3/segments/" + seg_no
 
 r = requests.request("GET", url, headers=headers).json()
 #print(r.text)
@@ -50,13 +59,15 @@ r = requests.request("GET", url, headers=headers).json()
   </wpt>
 '''
 
+# URL
+gpx_wpt = ('<!--https://www.strava.com/segments/{seg_no} -->\n'.format(seg_no=seg_no))
 
 # Start Position
-gpx_wpt = ('  <wpt lat="{latt}" lon="{long}">\n'
+gpx_wpt += ('  <wpt lat="{latt}" lon="{long}">\n'
 	.format(latt=r["start_latitude"], long=r["start_longitude"]))
 gpx_wpt += ('    <name>{cat}_{dist:.1f}_{grade}%</name>\n'
 	.format(cat=5-r["climb_category"], dist=r["distance"]/1000, grade=r["average_grade"]))
-gpx_wpt += ('    <desc>{id}_{name}</desc>\n'.format(id=r["id"], name=r["name"]))
+gpx_wpt += ('    <desc>{name}</desc>\n'.format(name=r["name"]))
 gpx_wpt += ('  </wpt>\n')
 
 #end Position
