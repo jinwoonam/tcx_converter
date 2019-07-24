@@ -4,10 +4,32 @@ import datetime
 import webbrowser
 
 # https://www.strava.com/settings/api
-strava_token = "Bearer 01af046cabff7462c5512440394dbff40bf570a8"
+#strava_token = "Bearer 01af046cabff7462c5512440394dbff40bf570a8"
+token_file = "strava_token.txt"
+
+# Token writing
+if (3 == len(sys.argv) and 'token' == sys.argv[1]):
+    file = open(token_file, "w")
+    file.write(sys.argv[2])
+    file.close()
+    print("Strava token is written to file.")
+    exit(0)
+
+# read token
+try:
+    file = open(token_file,"r")
+    strava_token = file.readline()
+    #print(strava_token)
+    file.close()
+except OSError as err:
+    print("OS error: {0}".format(err))
+    print("Strava token file ({token_file}) is not exist".format(token_file=token_file))
+    print("Usage : {py} token <access_toekn>".format(py=sys.argv[0]))
+    webbrowser.open('https://www.strava.com/settings/api')
+    exit(0)
 
 headers = {
-    'Authorization': strava_token,
+    'Authorization': "Bearer " + strava_token,
     'User-Agent': "PostmanRuntime/7.15.0",
     'Accept': "*/*",
     'Cache-Control': "no-cache",
@@ -26,7 +48,7 @@ else:
     #print(r.status_code)
 
     if (200 != r.status_code):
-	    print("Error:")
+        print("Error: Strava Token Auth")
         webbrowser.open('https://www.strava.com/settings/api')
         exit(0)
     else :
@@ -49,7 +71,7 @@ r = requests.request("GET", url, headers=headers).json()
  "private":false,"hazardous":false,"starred":false,
  "created_at":"2014-10-09T12:50:11Z","updated_at":"2019-07-10T08:19:53Z",
  "total_elevation_gain":617.8,
- "map":{"id":"s8306671","polyline":"y{igFe`djWUNe@Ji@f@QJMNOHSFa@\\SJs@Xs@j@WNo@n@iFhDWV}B~@}@VeAd@_@^uBpA_@L]V_@RsAnA{@lA[Zk@x@[VU^WPeAdAm@z@q@n@kAvA[V_ClA_A\\u@d@cAX_Ab@c@Jc@Bc@EcB}@YSSWUQSUa@M[Eg@BQFs@d@WJYBiCBkAAODk@CUI_@?QFSGUFS?k@ISIMSQi@Kk@O[EOSMOK]@e@XMRGXMVQTQHSDUESB_@IM@MEUAOCODe@Cm@PMJ_@AQI_@[I{@AOBKGa@B[Ig@GGCQIGq@UK?KBk@AIJMCa@FUTEG_@PUNQVe@AYKMCIBWGMBWRKLQh@EH_@LMPOJc@DMJODMJOPKTw@dAKFQFSBYf@a@rAMVQJBJIEMRYDYNWFq@Fw@Bq@ZYx@I~@?r@Sb@s@Dq@g@u@e@eEz@gBb@kBrA}AbAyAOoAiAgAmA}@k@eBe@oBQ_FMeB@aBL{Ag@kAaAe@cBeDiCwBoCk@mA_AeDSwASwCUkAa@kA[kAQiA[cAoAsBo@e@i@Yk@Ue@Wi@Se@Ke@OgAA]JYPa@h@SNWVq@\\o@b@UVQ\\SXQ^Od@SZ[Z]RYF]R_@J_@D]V[Jy@j@iAbA]TUXo@b@UXYRQTOJORg@f@SXs@pAOZo@tBMVUJURO?@F?CYG_@W_@k@m@gCWgF_@eBYkBMoBEuBq@yAsAAgC^_B^aBToCr@kAv@m@d@eC|C_@jAc@hB[`Ac@fAo@|@]N[R]\\YTiBdC]PWRkAd@iAJi@Lg@HkAZa@PcAp@w@`Ak@~@YVkApCQXYX[P_AZ_@DwBz@wB`@}@h@[L[XWZYRa@FkB@o@Ce@IiAOsFR_ACmDCiDg@oA`@}AvDgAtAkB~AuA`AqD`@eAj@y@Xu@FiAEgAJ_@?]BoAb@y@Rc@ZUBQJQNUD{AAWBmAb@SDSASJQXc@Fe@Aq@PYRm@Pi@@q@ReC`AoAPyADwAo@qAFa@nAS~AoALw@g@g@K{@A[RQBQLWF_@Tm@Vg@DWHc@?_@CK@m@EMNGNS|@IPEPUd@a@TSFs@`@]LMBO?QGa@YQSO_@_@]QWO[_@W{@O_@A{ABaAHiABkBNeBAqBJwBI}BQsBEmDFuAOw@iAq@qAcAo@gA@{@~@k@vAy@vAw@`AaAd@mAEw@Os@[cBsAgAe@eDUiAMiAV}@jAk@|AmAn@kB@uEC","resource_state":3},
+ "map":{"id":"s8306671","polyline":"y{igFe`djW...B@uEC","resource_state":3},
  "effort_count":202,"athlete_count":134,"star_count":0,
  "athlete_segment_stats":{"pr_elapsed_time":1905,"pr_date":"2019-07-10","effort_count":1}}
 
@@ -59,8 +81,10 @@ r = requests.request("GET", url, headers=headers).json()
   </wpt>
 '''
 
-# URL
+# URL & Information
 gpx_wpt = ('<!--https://www.strava.com/segments/{seg_no} -->\n'.format(seg_no=seg_no))
+gpx_wpt += ('<!--{name} (Cat:{cat}, Dist:{dist:.1f}km, Grade:{grade}%)\n'
+            .format(name=r["name"], cat=5-r["climb_category"], dist=r["distance"]/1000, grade=r["average_grade"]))
 
 # Start Position
 gpx_wpt += ('  <wpt lat="{latt}" lon="{long}">\n'
