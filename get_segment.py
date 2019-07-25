@@ -3,38 +3,15 @@ import sys
 import datetime
 import webbrowser
 
-# https://www.strava.com/settings/api
 #strava_token = "Bearer 01af046cabff7462c5512440394dbff40bf570a8"
+# https://www.strava.com/settings/api
 token_file = "strava_token.txt"
 
 # file name : segement_190712.gpx
-now = datetime.datetime.now()
-seg_file = now.strftime('segment_%y%m%d.gpx')
-# print(seg_file)
-
-# Token writing to file
-if (3 == len(sys.argv) and 'token' == sys.argv[1]):
-    file = open(token_file, "w")
-    file.write(sys.argv[2])
-    file.close()
-    print("Strava token is written to file.")
-    exit(0)
-
-# read token
-try:
-    file = open(token_file,"r")
-    strava_token = file.readline()
-    #print(strava_token)
-    file.close()
-except OSError as err:
-    print("OS error: {0}".format(err))
-    print("Strava token file ({token_file}) is not exist".format(token_file=token_file))
-    print("Usage : {py} token <access_toekn>".format(py=sys.argv[0]))
-    webbrowser.open('https://www.strava.com/settings/api')
-    exit(0)
+seg_file = datetime.datetime.now().strftime('segment_%y%m%d.gpx')
 
 postman_headers = {
-    'Authorization': "Bearer " + strava_token,
+    #'Authorization': "Bearer " + strava_token,
     'User-Agent': "PostmanRuntime/7.15.0",
     'Accept': "*/*",
     'Cache-Control': "no-cache",
@@ -46,16 +23,64 @@ postman_headers = {
     'cache-control': "no-cache"
     }
 
+
+def write_strava_token():
+    if (3 == len(sys.argv) and 'token' == sys.argv[1]):
+        file = open(token_file, "w")
+        file.write(sys.argv[2])
+        file.close()
+        print("Strava token is written to file.")
+        return 1
+    else:
+        return 0
+
+
+def read_strava_token():
+    try:
+        file = open(token_file, "r")
+        token = file.readline()
+        # print(token)
+        file.close()
+        return token
+    except OSError as err:
+        print("OS error: {0}".format(err))
+        print("Strava token file ({token_file}) is not exist".format(token_file=token_file))
+        print("Usage : {py} token <access_toekn>".format(py=sys.argv[0]))
+        webbrowser.open('https://www.strava.com/settings/api')
+        exit(0)
+        return 0
+
+
+def check_strava_token():
+    r = requests.request("GET", "https://www.strava.com/api/v3/athlete", headers=postman_headers)
+
+    if (200 == r.status_code):  # check OK
+        return 1
+    else:   # check Fail
+        print("Error: Strava Token Auth (err:{code})".format(code=r.status_code))
+        print("Usage : {py} token <access_toekn>".format(py=sys.argv[0]))
+        webbrowser.open('https://www.strava.com/settings/api')
+        exit(0)
+        return 0
+
+
+#######################################################################################################################
+# Token writing to file
+if (write_strava_token()):
+    exit(0)
+
+# read token
+strava_token = read_strava_token()
+if (strava_token):
+    #print('Current Strava token is {token}\n'.format(token=strava_token))
+    postman_headers['Authorization'] = "Bearer " + strava_token
+
+
 # check strava token
 if (1 == len(sys.argv)):
     r = requests.request("GET", "https://www.strava.com/api/v3/athlete", headers=postman_headers)
-    #print(r.status_code)
 
-    if (200 != r.status_code):
-        print("Error: Strava Token Auth")
-        print("Usage : {py} token <access_toekn>".format(py=sys.argv[0]))
-        webbrowser.open('https://www.strava.com/settings/api')
-    else :
+    if (check_strava_token()):
         print("Usage : {py} segment_number".format(py=sys.argv[0]))
     exit(0)
 
@@ -67,6 +92,7 @@ for seg_no in sys.argv:
         f.close()
         continue;
 
+    #TODO check error
     url = "https://www.strava.com/api/v3/segments/" + seg_no
     r = requests.request("GET", url, headers=postman_headers).json()
     #print(r.text)
@@ -77,16 +103,14 @@ for seg_no in sys.argv:
                 .format(name=r["name"], cat=5-r["climb_category"], dist=r["distance"]/1000, grade=r["average_grade"]))
 
     # Start Position
-    gpx_wpt += ('  <wpt lat="{latt}" lon="{long}">\n'
-        .format(latt=r["start_latitude"], long=r["start_longitude"]))
+    gpx_wpt += ('  <wpt lat="{latt}" lon="{long}">\n'.format(latt=r["start_latitude"], long=r["start_longitude"]))
     gpx_wpt += ('    <name>{cat}_{dist:.1f}_{grade}%</name>\n'
         .format(cat=5-r["climb_category"], dist=r["distance"]/1000, grade=r["average_grade"]))
     gpx_wpt += ('    <desc>{name}</desc>\n'.format(name=r["name"]))
     gpx_wpt += ('  </wpt>\n')
 
-    #end Position
-    gpx_wpt += ('  <wpt lat="{latt}" lon="{long}">\n'
-        .format(latt=r["end_latitude"], long=r["end_longitude"]))
+    # End Position
+    gpx_wpt += ('  <wpt lat="{latt}" lon="{long}">\n'.format(latt=r["end_latitude"], long=r["end_longitude"]))
     gpx_wpt += ('    <name>{name}</name>\n'.format(name=r["name"]))
     gpx_wpt += ('    <desc>{name}</desc>\n'.format(name=r["name"]))
     gpx_wpt += ('  </wpt>\n')
