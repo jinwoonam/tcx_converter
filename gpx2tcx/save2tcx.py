@@ -111,7 +111,7 @@ def trackpoint( pos, len, time):
     return cpt
 
 
-def coursepoint( pos, time, name, kind='Generic'):
+def coursepoint(latitude, longitude, time, name, kind='Generic'):
     kindlist = ["Generic", "Summit", "Valley", "Water", "Food", "Danger", "Left", "Right", "Straight", "First Aid", "4th Category", "3rd Category", "2nd Category", "1st Category", "Hors Category", "Sprint" ]
     
     if kind == '':
@@ -130,7 +130,7 @@ def coursepoint( pos, time, name, kind='Generic'):
         </Position>
         <PointType>{}</PointType>
       </CoursePoint>
-""".format( name, time, pos.latitude, pos.longitude, kind)
+""".format( name, time, latitude, longitude, kind)
     return cpt
 
 
@@ -177,7 +177,8 @@ def save( points, x, speed, wpt_list, s_list, name):
         for wpt in w_list:
             #print(wpt)
             time = time2str(x[wpt.pos] / (speed * 1000 / 3600))
-            c = c + coursepoint( points[wpt.pos], time, wpt.name, wpt.kind)
+            #c = c + coursepoint( points[wpt.pos], time, wpt.name, wpt.kind)
+            c = c + coursepoint(wpt.latitude, wpt.longitude, time, wpt.name, wpt.kind)
         #print(c)
         f.write(c)
         
