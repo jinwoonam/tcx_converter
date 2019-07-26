@@ -7,6 +7,7 @@
 """
 
 import save2tcx
+import wpttype
 import gpxpy.gpx    as gpx
 import gpxpy.parser as parser
 from geopy.distance import distance
@@ -54,7 +55,7 @@ class my_wpt(gpx.GPXTrackPoint):
 
     def get_nearest(self, points, wpt):
         near = []
-        min_dist = 200;
+        min_dist = 200
         for i in range(len(points)):
             dist = distance((points[i].latitude, points[i].longitude), (wpt.latitude, wpt.longitude)).meters
             if (dist < min_dist):
@@ -67,39 +68,14 @@ class my_wpt(gpx.GPXTrackPoint):
                 print(points[i])
                 if (min_dist < 20):
                     return i
-        return -1
+        if 200 == min_dist:
+            min_dist = -1
+        return min_dist
 
     def set_last(self, points):
         self.name = '완주'
         self.pos = len(points) - 1
         return
-
-    def strip_name(self, clist, mlist):
-        a = self.name
-
-        if a[0] == 's':
-            a = a[1:]
-
-        elif a[0] == 'c':
-            if a[1] in clist:
-                a = a[2:]
-            else:
-                a = a[1:]
-        elif a[0] == 'm':
-            if a[1] in mlist:
-                a = a[2:]
-            else:
-                a = a[1:]
-
-        if len(a) > 3 and a[-3] == '_':
-            a = a[:-3]
-        elif len(a) > 2 and a[-2] == '_':
-            a = a[:-2]
-        elif len(a) > 1 and a[-1] == '_':
-            a = a[:-1]
-
-        self.name = a
-        return self.name
 
     def get_km(self, prev, x):
         self.km = x[self.pos]
@@ -110,50 +86,7 @@ class my_wpt(gpx.GPXTrackPoint):
         return
 
     def set_kind(self):
-        kindlist = ["Generic", "Summit", "Valley", "Water", "Food", "Danger", "Left", "Right", "Straight", "First Aid",
-                    "4th Category", "3rd Category", "2nd Category", "1st Category", "Hors Category", "Sprint"]
-
-        print("name = {}".format(self.name))
-        self.kind = kindlist[0]  # Generic
-        if self.name[0] == 's':
-            self.kind = kindlist[1]  # Summit
-
-        elif self.name[0] == 'c':
-            if self.name[1] == '1':
-                self.kind = kindlist[13]  # 1st Category
-            elif self.name[1] == '2':
-                self.kind = kindlist[12]  # 2nd Category
-            elif self.name[1] == '3':
-                self.kind = kindlist[11]  # 3rd Category
-            elif self.name[1] == '4':
-                self.kind = kindlist[10]  # 4th Category
-            elif self.name[1] == 'H':
-                self.kind = kindlist[14]  # Hors Category
-            elif self.name[1] == 'S':
-                self.kind = kindlist[15]  # Sprint
-
-        elif self.name[0] == 'm':
-            if self.name[1] == 'G':
-                self.kind = kindlist[0]  # Generic
-            elif self.name[1] == 'S':
-                self.kind = kindlist[1]  # Summit
-            elif self.name[1] == 'V':
-                self.kind = kindlist[2]  # Valley
-            elif self.name[1] == 'W':
-                self.kind = kindlist[3]  # Water
-            elif self.name[1] == 'F':
-                self.kind = kindlist[4]  # Food
-            elif self.name[1] == 'D':
-                self.kind = kindlist[5]  # Danger
-            elif self.name[1] == 'L':
-                self.kind = kindlist[6]  # Left
-            elif self.name[1] == 'R':
-                self.kind = kindlist[7]  # Right
-            elif self.name[1] == 'C':
-                self.kind = kindlist[8]  # Straght
-            elif self.name[1] == 'A':
-                self.kind = kindlist[9]  # First Aid
-
+        self.kind = wpttype.get_wpt_type(self.name)
         return self.kind
 
     def get_ascen(self, prev, y):
@@ -258,10 +191,8 @@ def do_job(f_name, speed=20):
                 w.get_ascen(wpt_list[-1], ascen)
 
             if (w.name[0] in mlist) or (w.name[0] in clist) or w.name[0] == 's':
-                w.strip_name(clist, mlist)
                 s_list.append(w)
             else:
-                w.strip_name(clist, mlist)
                 wpt_list.append(w)
             # wpt.append(pos)
             # wpt_name.append(waypoint.name)
@@ -304,7 +235,7 @@ def do_job(f_name, speed=20):
 def main():
     # print(help(gpx))
     # do_job('D:/SRC/python/GPX2TCX/sample.gpx', 20)
-    do_job('D:/workspace/strava/gpx2tcx/test.gpx', 20)
+    do_job('D:/workspace/strava/gpx2tcx/Rapha_prestige_hamyang.gpx', 20)
 
 
 if __name__ == '__main__':
