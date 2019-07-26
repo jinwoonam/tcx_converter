@@ -41,5 +41,5 @@ ex) do_job('D:/SRC/python/GPX2TCX/sample.gpx', 25)
 	https://rusa.org/
 	https://www.audax-japan.org/en/audax-japan/
 	http://app.audaxthailand.com/home
-	 
+	
 	즐거운 라이딩 되세요 !!!
