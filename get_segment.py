@@ -99,7 +99,7 @@ for seg_no in sys.argv:
 
     # URL & Information
     gpx_wpt = ('<!--https://www.strava.com/segments/{seg_no} -->\n'.format(seg_no=seg_no))
-    gpx_wpt += ('<!--{name} (Cat:{cat}, Dist:{dist:.1f}km, Grade:{grade}%)\n'
+    gpx_wpt += ('<!--{name} (Cat:{cat}, Dist:{dist:.1f}km, Grade:{grade}%) -->\n'
                 .format(name=r["name"], cat=5-r["climb_category"], dist=r["distance"]/1000, grade=r["average_grade"]))
 
     # Start Position
