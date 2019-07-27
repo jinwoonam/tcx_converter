@@ -1,3 +1,7 @@
+#!/usr/bin/env python3
+# # -*- coding: utf-8 -*-
+
+import wpttype
 import xml.etree.ElementTree as ET
 import sys
 
@@ -29,6 +33,8 @@ for courses in root.findall('garmin_tc:Courses', ns):
         name = cp.find('garmin_tc:Name', ns)
         pointtype = cp.find('garmin_tc:PointType', ns)
         #if name.text ==
+        pointtype.text = wpttype.get_wpt_type(name.text)
+'''
         if upstart == True:
             pointtype.text = 'Summit'
             upstart = False
@@ -50,5 +56,5 @@ for courses in root.findall('garmin_tc:Courses', ns):
             pointtype.text = 'Water'
         if (name.text.lower().find('open') != -1):
             pointtype.text = 'Sprint'
-
+'''
 tree.write(track_name+'_wp.tcx', 'UTF-8', True)
