@@ -21,7 +21,7 @@ def get_wpt_type(name):
 
     if get_wpt_type.upstart != -1:
         #ret_str = 'Summit'
-        ret_str = {5: "Sprint", 4: "4th Category", 3: "3rd Category", 2: "2nd Category", 1: "1st Category", 0: "Hors Category"}.get(get_wpt_type.upstart, 'Summit')
+        ret_str = {5: "Summit", 4: "4th Category", 3: "3rd Category", 2: "2nd Category", 1: "1st Category", 0: "Hors Category"}.get(get_wpt_type.upstart, 'Summit')
         get_wpt_type.upstart = -1
 
     if (name.lower().find('st') != -1):
@@ -32,7 +32,9 @@ def get_wpt_type(name):
         ret_str = 'Right'
     if (name.lower().find('%') != -1 | (name.lower().find('ups') != -1)):
         ret_str = 'Valley'
-        get_wpt_type.upstart = int(name[0])
+        get_wpt_type.upstart = 5
+        if '_' == name[1]:    # ex) 1_ : 1st Category
+            get_wpt_type.upstart = int(name[0])
     if (name.lower().find('top') != -1):
         ret_str = 'Summit'
         get_wpt_type.upstart = -1

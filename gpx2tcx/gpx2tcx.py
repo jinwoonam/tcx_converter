@@ -14,6 +14,7 @@ from geopy.distance import distance
 from geopy.distance import great_circle
 import ntpath
 import time
+import sys
 
 __author__ = 'Seijung Park'
 __license__ = 'GPLv2'
@@ -233,10 +234,20 @@ def do_job(f_name, speed=20):
 
 
 def main():
-    # print(help(gpx))
-    # do_job('D:/SRC/python/GPX2TCX/sample.gpx', 20)
-    do_job('D:/workspace/strava/gpx2tcx/Rapha_prestige_hamyang.gpx', 20)
+    #print(help(gpx))
 
+    #parameter = sys.argv[0].split('.')
+    if len(sys.argv) == 1:          # 옵션 없으면 도움말 출력하고 종료
+        print("Usage : {py} <in.gpx>".format(py=sys.argv[0]))
+        track_name = 'test'
+        exit(0)
+    else:
+        sys.argv[1]
+        track_name = sys.argv[1].split('.')[0]
+        print("use", sys.argv[1])
+
+    # do_job('D:/SRC/python/GPX2TCX/sample.gpx', 20)
+    do_job(sys.argv[1], 20)
 
 if __name__ == '__main__':
     main()

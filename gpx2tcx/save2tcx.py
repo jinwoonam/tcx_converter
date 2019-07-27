@@ -37,8 +37,8 @@ def header1():
  
 
 def header2( name ):
-    if len(name) > 10:
-        name = name[:10]
+    #if len(name) > 10:
+    #    name = name[:10]
     hdr = """  <Folders>
     <Courses>
       <CourseFolder Name=\"{}\">
@@ -148,7 +148,8 @@ coursepoint * m
 footer
 """
 def save( points, x, speed, wpt_list, s_list, name):
-    name = name[:-4]
+    #name = name[:-4]
+    name = name.split('.')[0]
     f = codecs.open(name+'.tcx', 'w', 'utf-8')
     
     h = header1()
