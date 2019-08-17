@@ -72,28 +72,27 @@ def footer():
     ftr = """    </Course>
   </Courses>
 </TrainingCenterDatabase>
+
 """
     return ftr
 
     
 def lapinfo( p, time, len):
-    lap = """          <Lap>
+    lap = """      <Lap>
         <TotalTimeSeconds>{}</TotalTimeSeconds>
         <DistanceMeters>{}</DistanceMeters>
         <BeginPosition>
           <LatitudeDegrees>{}</LatitudeDegrees>
           <LongitudeDegrees>{}</LongitudeDegrees>
         </BeginPosition>
-        <BeginAltitudeMeters>{}</BeginAltitudeMeters>
         <EndPosition>
           <LatitudeDegrees>{}</LatitudeDegrees>
           <LongitudeDegrees>{}</LongitudeDegrees>
         </EndPosition>
-        <EndAltitudeMeters>{}</EndAltitudeMeters>
         <Intensity>Active</Intensity>
       </Lap>
       <Track>
-""".format(time, len, p[0].latitude, p[0].longitude, p[0].elevation, p[-1].latitude, p[-1].longitude, p[-1].elevation)
+""".format(time, len, p[0].latitude, p[0].longitude, p[-1].latitude, p[-1].longitude)
     return lap
 
        
@@ -105,7 +104,7 @@ def trackpoint( pos, len, time):
             <LongitudeDegrees>{}</LongitudeDegrees>
           </Position>
           <AltitudeMeters>{}</AltitudeMeters>
-          <DistanceMeters>{}</DistanceMeters>
+          <DistanceMeters>{:.3f}</DistanceMeters>
         </Trackpoint>
 """.format( time, pos.latitude, pos.longitude, pos.elevation, len)
     return cpt
@@ -120,6 +119,7 @@ def coursepoint(latitude, longitude, time, name, kind='Generic'):
         
     if len(name) > 10:
         name = name[:10]
+    name = name.replace("&", "&amp;", 3)
 
     cpt = """      <CoursePoint>
         <Name>{}</Name>
