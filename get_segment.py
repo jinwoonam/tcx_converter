@@ -103,14 +103,14 @@ for seg_no in sys.argv:
                 .format(name=r["name"], cat=5-r["climb_category"], dist=r["distance"]/1000, grade=r["average_grade"]))
 
     # Start Position
-    gpx_wpt += ('  <wpt lat="{latt}" lon="{long}">\n'.format(latt=r["start_latitude"], long=r["start_longitude"]))
+    gpx_wpt += ('  <wpt lat="{latt}" lon="{long}">\n'.format(latt=r["start_latlng"][0], long=r["start_latlng"][0]))
     gpx_wpt += ('    <name>{cat}_{dist:.1f}_{grade}%</name>\n'
         .format(cat=5-r["climb_category"], dist=r["distance"]/1000, grade=r["average_grade"]))
     gpx_wpt += ('    <desc>{name}</desc>\n'.format(name=r["name"]))
     gpx_wpt += ('  </wpt>\n')
 
     # End Position
-    gpx_wpt += ('  <wpt lat="{latt}" lon="{long}">\n'.format(latt=r["end_latitude"], long=r["end_longitude"]))
+    gpx_wpt += ('  <wpt lat="{latt}" lon="{long}">\n'.format(latt=r["end_latlng"][0], long=r["end_latlng"][1]))
     gpx_wpt += ('    <name>{name}</name>\n'.format(name=r["name"]))
     gpx_wpt += ('    <desc>{name}</desc>\n'.format(name=r["name"]))
     gpx_wpt += ('  </wpt>\n')
